@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 MovieVerse - Live Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #FFD700, #FF6B35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .demo-section {
+            margin: 2rem 0;
+        }
+        
+        .status {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #FF6B35, #F7931E);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 15px 0 rgba(255, 107, 53, 0.3);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px 0 rgba(255, 107, 53, 0.4);
+        }
+        
+        .features {
+            margin-top: 2rem;
+            text-align: left;
+            display: inline-block;
+        }
+        
+        .feature {
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .feature::before {
+            content: "🎬";
+            margin-right: 0.5rem;
+        }
+        
+        .coming-soon {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .github-link {
+            margin-top: 2rem;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .github-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎬</div>
+        <h1 class="title">MovieVerse</h1>
+        <p class="subtitle">Your Pocket Cinema Experience</p>
+        
+        <div class="demo-section">
+            <div class="status coming-soon">🚀 Interactive Web Demo Coming Soon!</div>
+            <p>Experience the full power of MovieVerse directly in your browser</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">Discover trending movies</div>
+            <div class="feature">Smart AI recommendations</div>
+            <div class="feature">Personal watchlist</div>
+            <div class="feature">Beautiful dark UI</div>
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <a href="https://github.com/EbrahimOsa/movieapp/releases" class="download-btn">
+                📱 Download Android APK
+            </a>
+        </div>
+        
+        <a href="https://github.com/EbrahimOsa/movieapp" class="github-link">
+            ⭐ Star on GitHub
+        </a>
+    </div>
+</body>
+</html>
