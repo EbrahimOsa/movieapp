@@ -144,34 +144,34 @@
   <table>
     <tr>
       <td align="center" width="30%">
-        <img src="https://via.placeholder.com/250x500/1E88E5/FFFFFF?text=🏠%0A%0AHome%0AScreen%0A%0A✨%0ATrending%0AMovies" alt="Home Screen" style="border-radius: 15px;"/>
+        <img src="docs/screenshots/home.jpg" alt="Home Screen" width="250" style="border-radius: 15px;"/>
         <br><b>🏠 Home Experience</b>
         <br><sub>Discover trending movies with beautiful hero banners</sub>
       </td>
       <td align="center" width="30%">
-        <img src="https://via.placeholder.com/250x500/FF6B35/FFFFFF?text=🔍%0A%0ASearch%0A&%20Filter%0A%0A🎯%0AAdvanced%0AFilters" alt="Search Screen" style="border-radius: 15px;"/>
+        <img src="docs/screenshots/search.jpg" alt="Search Screen" width="250" style="border-radius: 15px;"/>
         <br><b>🔍 Smart Search</b>
         <br><sub>Advanced filtering with real-time suggestions</sub>
       </td>
       <td align="center" width="30%">
-        <img src="https://via.placeholder.com/250x500/FFC107/000000?text=🎬%0A%0AMovie%0ADetails%0A%0A⭐%0ARate%20&%0AReview" alt="Details Screen" style="border-radius: 15px;"/>
+        <img src="docs/screenshots/details.jpg" alt="Details Screen" width="250" style="border-radius: 15px;"/>
         <br><b>🎬 Movie Details</b>
         <br><sub>Rich information with rating and trailer integration</sub>
       </td>
     </tr>
     <tr>
       <td align="center">
-        <img src="https://via.placeholder.com/250x500/9C27B0/FFFFFF?text=💖%0A%0AFavorites%0A&%20Watchlist%0A%0A📚%0AYour%0ACollection" alt="Favorites" style="border-radius: 15px;"/>
+        <img src="docs/screenshots/favorites.jpg" alt="Favorites" width="250" style="border-radius: 15px;"/>
         <br><b>💖 Personal Collection</b>
         <br><sub>Manage your watchlist with offline access</sub>
       </td>
       <td align="center">
-        <img src="https://via.placeholder.com/250x500/4CAF50/FFFFFF?text=🤖%0A%0ARecommendations%0A%0A🎯%0AAI%20Powered%0ASuggestions" alt="Recommendations" style="border-radius: 15px;"/>
-        <br><b>🤖 AI Recommendations</b>
-        <br><sub>Personalized suggestions based on your taste</sub>
+        <img src="docs/screenshots/hero-banner.jpg" alt="Hero Banner" width="250" style="border-radius: 15px;"/>
+        <br><b>🎬 Cinematic Experience</b>
+        <br><sub>Immersive movie spotlight with trailers</sub>
       </td>
       <td align="center">
-        <img src="https://via.placeholder.com/250x500/FF5722/FFFFFF?text=⭐%0A%0ARating%0ASystem%0A%0A📊%0APersonal%0AInsights" alt="Rating System" style="border-radius: 15px;"/>
+        <img src="docs/screenshots/home.jpg" alt="Rating System" width="250" style="border-radius: 15px;"/>
         <br><b>⭐ Rating System</b>
         <br><sub>Interactive rating with visual feedback</sub>
       </td>
