@@ -1,0 +1,14 @@
+# تكوين بناء محسن للحجم
+flutter:
+  sdk: '>=3.0.0 <4.0.0'
+
+# إعدادات التحسين
+optimization:
+  enable-split-debug-info: true
+  obfuscate: true
+  
+# إعدادات الأصول
+assets:
+  optimization:
+    compress: true
+    format: webp

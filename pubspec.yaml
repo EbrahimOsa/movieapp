@@ -1,0 +1,47 @@
+name: movieverse
+description: "🎬 MovieVerse - A modern, feature-rich movie discovery app built with Flutter. Discover trending movies, search with advanced filters, create your personal watchlist, and get personalized recommendations."
+publish_to: 'none'
+version: 2.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.5
+  http: ^1.1.0
+  cached_network_image: ^3.3.0
+  shimmer: ^3.0.0
+  go_router: ^16.2.1
+  shared_preferences: ^2.2.2
+  youtube_player_flutter: ^9.1.2
+  intl: ^0.18.1
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/ic_launcher_foreground.png
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/ic_launcher_foreground.png"
+  remove_alpha_ios: true
+  remove_alpha_android: true
+
+flutter:
+  uses-material-design: true
+  
+  # تقليل حجم التطبيق
+  generate: true
+  
+  # Assets optimized for size
+  assets:
+    - assets/ic_launcher_foreground.png
+    - assets/ic_launcher_background.png
