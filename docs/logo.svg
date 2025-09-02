@@ -1,0 +1,39 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E88E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFC107;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F7931E;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="url(#gradient1)" opacity="0.1"/>
+  
+  <!-- Movie Camera Body -->
+  <rect x="50" y="70" width="100" height="60" rx="10" fill="url(#gradient1)"/>
+  
+  <!-- Camera Lens -->
+  <circle cx="130" cy="100" r="25" fill="url(#gradient2)"/>
+  <circle cx="130" cy="100" r="18" fill="#2C3E50"/>
+  <circle cx="130" cy="100" r="12" fill="url(#gradient1)"/>
+  
+  <!-- Film Strip -->
+  <rect x="20" y="85" width="25" height="30" fill="#34495E"/>
+  <rect x="22" y="87" width="3" height="4" fill="#ECF0F1"/>
+  <rect x="22" y="93" width="3" height="4" fill="#ECF0F1"/>
+  <rect x="22" y="99" width="3" height="4" fill="#ECF0F1"/>
+  <rect x="22" y="105" width="3" height="4" fill="#ECF0F1"/>
+  <rect x="22" y="111" width="3" height="4" fill="#ECF0F1"/>
+  
+  <!-- Stars -->
+  <polygon points="70,40 72,46 78,46 73,50 75,56 70,52 65,56 67,50 62,46 68,46" fill="#FFC107"/>
+  <polygon points="140,40 141,44 145,44 142,47 143,51 140,49 137,51 138,47 135,44 139,44" fill="#FFC107"/>
+  <polygon points="160,65 161,68 164,68 162,70 163,73 160,71 157,73 158,70 156,68 159,68" fill="#FFC107"/>
+  
+  <!-- Play Button -->
+  <polygon points="85,95 85,105 95,100" fill="#ECF0F1"/>
+</svg>
