@@ -7,24 +7,36 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
-import 'package:movieverse/main.dart' as app;
+import 'package:movieverse/main.dart';
+import 'package:movieverse/presentation/providers/theme_provider.dart';
+import 'package:movieverse/presentation/providers/movie_provider.dart';
+import 'package:movieverse/presentation/providers/search_provider.dart';
+import 'package:movieverse/presentation/providers/favorites_provider.dart';
+import 'package:movieverse/data/models/repositories/movie_repository.dart';
+import 'package:movieverse/data/models/datasources/tmdb_api_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const app.MovieVerseApp());
+  testWidgets('App starts without errors', (WidgetTester tester) async {
+    // Create test providers
+    final movieRepository = MovieRepository(apiService: TMDBApiService());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Build our app with proper providers and trigger a frame.
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider(create: (_) => MovieProvider(movieRepository)),
+          ChangeNotifierProvider(
+              create: (_) => SearchProvider(movieRepository)),
+          ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ],
+        child: const MovieVerseApp(),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the app builds without errors
+    expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 
@@ -24,14 +25,13 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
   bool _showFilters = false;
 
   // Recent searches and live suggestions
-  List<String> _recentSearches = [];
   List<String> _liveSuggestions = [];
   bool _showSuggestions = false;
-  final int _selectedSuggestionIndex = -1;
 
   // Filter variables
   List<GenreModel> _availableGenres = [];
-  final List<int> _selectedGenres = [];
+  final List<int> _selectedGenres =
+      []; // إزالة final لأننا نحتاج لتعديل القائمة
   String _selectedYear = 'All Years';
   double _minRating = 0.0;
   String _sortBy = 'popularity';
@@ -49,39 +49,9 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
     '2018',
   ];
 
-  // Popular search suggestions
-  final List<String> _popularSuggestions = [
-    'Avengers: Endgame',
-    'The Dark Knight',
-    'Inception',
-    'Pulp Fiction',
-    'The Shawshank Redemption',
-    'Interstellar',
-    'Spider-Man',
-    'Batman',
-    'Iron Man',
-    'Joker',
-    'The Matrix',
-    'Star Wars',
-    'Lord of the Rings',
-    'Harry Potter',
-    'Fast & Furious',
-    'Mission: Impossible',
-    'John Wick',
-    'Terminator',
-    'Alien',
-    'Avatar',
-  ];
+  // تم حذف Popular suggestions لتبسيط التجربة
 
-  // Trending searches (simulated)
-  final List<String> _trendingSearches = [
-    'Deadpool 3',
-    'Dune: Part Two',
-    'Spider-Man: Across the Spider-Verse',
-    'Guardians of the Galaxy Vol. 3',
-    'Fast X',
-    'Indiana Jones 5',
-  ];
+  // تم حذف Trending searches لتبسيط التجربة
 
   @override
   void initState() {
@@ -123,18 +93,12 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
   }
 
   void _loadRecentSearches() {
-    _recentSearches = ['Avengers', 'Batman', 'Joker'];
+    // لا نحفظ عمليات البحث السابقة
   }
 
   void _saveRecentSearch(String query) {
-    if (query.trim().isEmpty || _recentSearches.contains(query)) return;
-
-    setState(() {
-      _recentSearches.insert(0, query);
-      if (_recentSearches.length > 5) {
-        _recentSearches.removeLast();
-      }
-    });
+    // لا نحفظ عمليات البحث
+    return;
   }
 
   void _onSearchChanged(String query) {
@@ -158,38 +122,41 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
   }
 
   void _updateLiveSuggestions(String query) {
-    final suggestions = <String>[];
-    final lowerQuery = query.toLowerCase();
-
-    // Add recent searches that match
-    for (final recent in _recentSearches) {
-      if (recent.toLowerCase().contains(lowerQuery)) {
-        suggestions.add(recent);
-      }
-    }
-
-    // Add popular suggestions that match
-    for (final popular in _popularSuggestions) {
-      if (popular.toLowerCase().contains(lowerQuery) &&
-          !suggestions.contains(popular)) {
-        suggestions.add(popular);
-      }
-    }
-
+    // لا نعرض أي اقتراحات - تبسيط كامل
     setState(() {
-      _liveSuggestions = suggestions.take(6).toList();
-      _showSuggestions = suggestions.isNotEmpty;
+      _liveSuggestions = [];
+      _showSuggestions = false;
     });
   }
 
   void _performSearch(String query) {
-    context.read<SearchProvider>().searchMovies(
-          query,
-          genres: _selectedGenres,
-          year: _selectedYear == 'All Years' ? null : _selectedYear,
-          minRating: _minRating,
-          sortBy: _sortBy,
-        );
+    // تطبيق البحث حسب النوع المحدد
+    switch (_searchType) {
+      case 'movies':
+        context.read<SearchProvider>().searchMovies(
+              query,
+              genres: _selectedGenres,
+              year: _selectedYear == 'All Years' ? null : _selectedYear,
+              minRating: _minRating,
+              sortBy: _sortBy,
+            );
+        break;
+      case 'actors':
+        // البحث في أفلام الممثل
+        context.read<SearchProvider>().searchMoviesByActor(query);
+        break;
+      case 'all':
+      default:
+        // البحث العام
+        context.read<SearchProvider>().searchMovies(
+              query,
+              genres: _selectedGenres,
+              year: _selectedYear == 'All Years' ? null : _selectedYear,
+              minRating: _minRating,
+              sortBy: _sortBy,
+            );
+        break;
+    }
     _animationController.forward();
   }
 
@@ -219,17 +186,14 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
       if (_searchController.text.isNotEmpty) {
         _updateLiveSuggestions(_searchController.text);
       } else {
-        // Show trending/popular suggestions when focused but empty
+        // إخفاء الاقتراحات عند التركيز بدون نص
         setState(() {
-          _liveSuggestions = _recentSearches.isNotEmpty
-              ? _recentSearches.take(3).toList() +
-                  _popularSuggestions.take(3).toList()
-              : _popularSuggestions.take(6).toList();
-          _showSuggestions = true;
+          _liveSuggestions = [];
+          _showSuggestions = false;
         });
       }
     } else {
-      // Delay hiding suggestions to allow tap on suggestions
+      // إخفاء الاقتراحات عند فقدان التركيز
       Timer(const Duration(milliseconds: 150), () {
         if (mounted) {
           setState(() {
@@ -266,6 +230,18 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
     }
   }
 
+  String _getHintText() {
+    switch (_searchType) {
+      case 'movies':
+        return 'Search for movies...';
+      case 'actors':
+        return 'Search for actors...';
+      case 'all':
+      default:
+        return 'Search movies, actors, genres...';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -286,8 +262,9 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
               Column(
                 children: [
                   _buildHeader(),
-                  if (_showFilters) _buildFiltersSection(),
-                  _buildActiveFilters(),
+                  if (_showFilters && _searchType != 'actors')
+                    _buildFiltersSection(),
+                  if (_searchType != 'actors') _buildActiveFilters(),
                   Expanded(child: _buildContent()),
                 ],
               ),
@@ -331,12 +308,12 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
           color: _focusNode.hasFocus
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-              : Theme.of(context).colorScheme.outline.withOpacity(0.1),
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)
+              : Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -348,9 +325,10 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
               fontWeight: FontWeight.w400,
             ),
         decoration: InputDecoration(
-          hintText: 'Search movies, actors, genres...',
+          hintText: _getHintText(),
           hintStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             fontSize: 16,
             fontWeight: FontWeight.w400,
           ),
@@ -361,7 +339,10 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
               size: 22,
               color: _focusNode.hasFocus
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  : Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.6),
             ),
           ),
           prefixIconConstraints: const BoxConstraints(
@@ -383,7 +364,7 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.6),
+                            .withValues(alpha: 0.6),
                       ),
                       onPressed: () {
                         _searchController.clear();
@@ -404,32 +385,37 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
                       ),
                     ),
                   ),
-                Container(
-                  margin: const EdgeInsets.only(right: 4),
-                  decoration: BoxDecoration(
-                    color: _showFilters
-                        ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.tune_rounded,
-                      size: 20,
+                // إخفاء زر الفلاتر عند البحث في الممثلين
+                if (_searchType != 'actors')
+                  Container(
+                    margin: const EdgeInsets.only(right: 4),
+                    decoration: BoxDecoration(
                       color: _showFilters
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context)
+                          ? Theme.of(context)
                               .colorScheme
-                              .onSurface
-                              .withOpacity(0.6),
+                              .primary
+                              .withValues(alpha: 0.1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    onPressed: _toggleFilters,
-                    style: IconButton.styleFrom(
-                      padding: const EdgeInsets.all(6),
-                      minimumSize: const Size(32, 32),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.tune_rounded,
+                        size: 20,
+                        color: _showFilters
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.6),
+                      ),
+                      onPressed: _toggleFilters,
+                      style: IconButton.styleFrom(
+                        padding: const EdgeInsets.all(6),
+                        minimumSize: const Size(32, 32),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -468,41 +454,62 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
     return Expanded(
       child: GestureDetector(
         onTap: () {
+          // إضافة haptic feedback
+          HapticFeedback.lightImpact();
           setState(() {
             _searchType = type;
           });
+          // إعادة البحث إذا كان هناك نص مكتوب
           if (_searchController.text.isNotEmpty) {
             _performSearch(_searchController.text);
           }
         },
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
-          height: 38,
+          height: 40,
           decoration: BoxDecoration(
             color: isSelected
                 ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.surface.withOpacity(0.8),
-            borderRadius: BorderRadius.circular(19),
+                : Theme.of(context).colorScheme.surface.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(20),
             border: isSelected
                 ? null
                 : Border.all(
-                    color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.15),
-                    width: 1,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outline
+                        .withValues(alpha: 0.2),
+                    width: 1.5,
                   ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: Center(
-            child: Text(
-              title,
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 300),
               style: TextStyle(
                 color: isSelected
                     ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
+                    : Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.8),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 fontSize: 14,
-                letterSpacing: 0.2,
               ),
+              child: Text(title),
             ),
           ),
         ),
@@ -511,162 +518,287 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
   }
 
   Widget _buildFiltersSection() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      padding: const EdgeInsets.all(16),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Filters',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextButton(
-                    onPressed: _clearFilters,
-                    child: const Text('Clear'),
-                  ),
-                  const SizedBox(width: 8),
-                  FilledButton(
-                    onPressed: _applyFilters,
-                    child: const Text('Apply'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Genres
-          Text(
-            'Genres',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 40,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _availableGenres.length,
-              itemBuilder: (context, index) {
-                final genre = _availableGenres[index];
-                final isSelected = _selectedGenres.contains(genre.id);
-                return Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(genre.emoji),
-                        const SizedBox(width: 4),
-                        Text(genre.name),
-                      ],
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          _selectedGenres.add(genre.id);
-                        } else {
-                          _selectedGenres.remove(genre.id);
-                        }
-                      });
-                    },
-                    visualDensity: VisualDensity.compact,
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Year and Rating
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Year',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    DropdownButtonFormField<String>(
-                      initialValue: _selectedYear,
-                      decoration: const InputDecoration(
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                      ),
-                      items: _years.map((year) {
-                        return DropdownMenuItem(
-                          value: year,
-                          child:
-                              Text(year, style: const TextStyle(fontSize: 13)),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedYear = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Min Rating: ${_minRating.toStringAsFixed(1)}',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    Slider(
-                      value: _minRating,
-                      min: 0.0,
-                      max: 10.0,
-                      divisions: 20,
-                      label: _minRating.toStringAsFixed(1),
-                      onChanged: (value) {
-                        setState(() {
-                          _minRating = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.tune_rounded,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Advanced Filters',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: _clearFilters,
+                icon: const Icon(Icons.clear_all_rounded, size: 18),
+                label: const Text('Clear'),
+                style: TextButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Genres Section
+          _buildFilterSection(
+            title: 'Movie Genres',
+            icon: Icons.category_rounded,
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _availableGenres.map((genre) {
+                final isSelected = _selectedGenres.contains(genre.id);
+                return _buildGenreChip(genre, isSelected);
+              }).toList(),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Year and Rating Row
+          Row(
+            children: [
+              // Year Filter
+              Expanded(
+                child: _buildFilterSection(
+                  title: 'Release Year',
+                  icon: Icons.calendar_today_rounded,
+                  child: _buildYearDropdown(),
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Rating Filter
+              Expanded(
+                flex: 2,
+                child: _buildFilterSection(
+                  title: 'Minimum Rating',
+                  icon: Icons.star_rounded,
+                  child: _buildRatingSlider(),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          // Apply Button
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _applyFilters,
+              icon: const Icon(Icons.search_rounded),
+              label: const Text('Apply Filters'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper methods for filters
+  Widget _buildFilterSection({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        child,
+      ],
+    );
+  }
+
+  Widget _buildGenreChip(GenreModel genre, bool isSelected) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      child: FilterChip(
+        label: Text(
+          genre.name,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
+        selected: isSelected,
+        onSelected: (selected) {
+          setState(() {
+            if (selected) {
+              _selectedGenres.add(genre.id);
+            } else {
+              _selectedGenres.remove(genre.id);
+            }
+          });
+        },
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        selectedColor: Theme.of(context).colorScheme.primaryContainer,
+        checkmarkColor: Theme.of(context).colorScheme.primary,
+        side: BorderSide(
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+          width: isSelected ? 1.5 : 1,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
+      ),
+    );
+  }
+
+  Widget _buildYearDropdown() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedYear,
+          isDense: true,
+          items: _years.map((year) {
+            return DropdownMenuItem<String>(
+              value: year,
+              child: Text(
+                year,
+                style: const TextStyle(fontSize: 14),
+              ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedYear = value ?? 'All Years';
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRatingSlider() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              _minRating == 0.0
+                  ? 'Any Rating'
+                  : '${_minRating.toStringAsFixed(1)}+',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.star_rounded,
+                  size: 16,
+                  color: Colors.amber,
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  _minRating.toStringAsFixed(1),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            trackHeight: 4,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+            overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+          ),
+          child: Slider(
+            value: _minRating,
+            min: 0.0,
+            max: 10.0,
+            divisions: 20,
+            onChanged: (value) {
+              setState(() {
+                _minRating = value;
+              });
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -692,7 +824,7 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.8),
+                          .withValues(alpha: 0.8),
                     ),
               ),
               const Spacer(),
@@ -849,7 +981,7 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .withValues(alpha: 0.7),
                   ),
               textAlign: TextAlign.center,
             ),
@@ -878,7 +1010,10 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
             Icon(
               Icons.search_off,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.4),
             ),
             const SizedBox(height: 16),
             Text(
@@ -893,7 +1028,7 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.6),
+                        .withValues(alpha: 0.6),
                   ),
               textAlign: TextAlign.center,
             ),
@@ -907,17 +1042,54 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${searchProvider.searchResults.length} results',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.7),
-                    ),
+              // Search type indicator
+              if (_searchType == 'actors')
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.person_rounded,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Movies by "${searchProvider.searchQuery}"',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              // Results count
+              Row(
+                children: [
+                  Text(
+                    '${searchProvider.searchResults.length} results',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.7),
+                        ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -964,11 +1136,11 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
                     Theme.of(context)
                         .colorScheme
                         .primaryContainer
-                        .withOpacity(0.3),
+                        .withValues(alpha: 0.3),
                     Theme.of(context)
                         .colorScheme
                         .secondaryContainer
-                        .withOpacity(0.3),
+                        .withValues(alpha: 0.3),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -997,7 +1169,7 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.6),
+                              .withValues(alpha: 0.6),
                         ),
                     textAlign: TextAlign.center,
                   ),
@@ -1024,7 +1196,8 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              color:
+                  Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
             ),
           ),
           child: _searchController.text.isEmpty
@@ -1042,20 +1215,18 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
       itemCount: _liveSuggestions.length,
       separatorBuilder: (context, index) => Divider(
         height: 1,
-        color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
       ),
       itemBuilder: (context, index) {
         final suggestion = _liveSuggestions[index];
-        final isRecent = _recentSearches.contains(suggestion);
 
         return ListTile(
           dense: true,
           leading: Icon(
-            isRecent ? Icons.history : Icons.search,
+            Icons.search,
             size: 20,
-            color: isRecent
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.7)
-                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           title: RichText(
             text: TextSpan(
@@ -1068,7 +1239,8 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
           trailing: Icon(
             Icons.call_made,
             size: 16,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
           ),
           onTap: () => _onSuggestionSelected(suggestion),
         );
@@ -1077,154 +1249,51 @@ class _EnhancedSearchScreenState extends State<EnhancedSearchScreen>
   }
 
   Widget _buildTrendingSuggestions() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Recent searches section
-          if (_recentSearches.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.history,
-                    size: 16,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Recent searches',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                ],
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(60),
+              ),
+              child: Icon(
+                Icons.search_rounded,
+                size: 56,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            ..._recentSearches.take(3).map((search) => ListTile(
-                  dense: true,
-                  leading: Icon(
-                    Icons.history,
-                    size: 18,
+            const SizedBox(height: 32),
+            Text(
+              'Discover Movies',
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Search for your favorite movies, actors,\nand discover new cinema experiences',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.6),
+                        .withValues(alpha: 0.6),
+                    height: 1.6,
+                    fontSize: 16,
                   ),
-                  title: Text(
-                    search,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(fontSize: 14),
-                  ),
-                  trailing: Icon(
-                    Icons.call_made,
-                    size: 16,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.4),
-                  ),
-                  onTap: () => _onSuggestionSelected(search),
-                )),
-            const Divider(),
+              textAlign: TextAlign.center,
+            ),
           ],
-
-          // Trending section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.trending_up,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Trending now',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                ),
-              ],
-            ),
-          ),
-          ..._trendingSearches.take(4).map((trending) => ListTile(
-                dense: true,
-                leading: Icon(
-                  Icons.trending_up,
-                  size: 18,
-                  color:
-                      Theme.of(context).colorScheme.secondary.withOpacity(0.7),
-                ),
-                title: Text(
-                  trending,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontSize: 14),
-                ),
-                trailing: Icon(
-                  Icons.call_made,
-                  size: 16,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
-                ),
-                onTap: () => _onSuggestionSelected(trending),
-              )),
-
-          // Popular section
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.local_fire_department,
-                  size: 16,
-                  color: Colors.orange,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Popular searches',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.orange,
-                      ),
-                ),
-              ],
-            ),
-          ),
-          ..._popularSuggestions.take(3).map((popular) => ListTile(
-                dense: true,
-                leading: Icon(
-                  Icons.local_fire_department,
-                  size: 18,
-                  color: Colors.orange.withOpacity(0.7),
-                ),
-                title: Text(
-                  popular,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontSize: 14),
-                ),
-                trailing: Icon(
-                  Icons.call_made,
-                  size: 16,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
-                ),
-                onTap: () => _onSuggestionSelected(popular),
-              )),
-
-          const SizedBox(height: 8),
-        ],
+        ),
       ),
     );
   }

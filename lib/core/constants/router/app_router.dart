@@ -5,6 +5,7 @@ import '../../../presentation/screens/home_screen.dart';
 import '../../../presentation/screens/movie_details_screen.dart';
 import '../../../presentation/screens/enhanced_search_screen.dart';
 import '../../../presentation/screens/favorites_screen.dart';
+import '../../../presentation/screens/category_movies_screen.dart';
 import '../../../data/models/movie_model.dart';
 
 class AppRouter {
@@ -51,6 +52,20 @@ class AppRouter {
         path: '/favorites',
         name: 'favorites',
         builder: (context, state) => const FavoritesScreen(),
+      ),
+
+      // Category Movies Screen
+      GoRoute(
+        path: '/category/:categoryName',
+        name: 'categoryMovies',
+        builder: (context, state) {
+          final categoryName = state.pathParameters['categoryName']!;
+          final title = state.uri.queryParameters['title'] ?? categoryName;
+          return CategoryMoviesScreen(
+            category: categoryName,
+            title: title,
+          );
+        },
       ),
     ],
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../constants/app_constants.dart';
 
 class AppConfig {
@@ -8,7 +9,8 @@ class AppConfig {
   static String get imageBaseUrl => 'https://image.tmdb.org/t/p/w500';
 
   static Future<void> initialize() async {
-    print('AppConfig initialized');
+    // AppConfig initialized - using debugPrint instead of print
+    debugPrint('AppConfig initialized');
   }
 
   static bool get isValidated {

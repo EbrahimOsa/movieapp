@@ -155,9 +155,9 @@ class _HeroBannerState extends State<HeroBanner> with TickerProviderStateMixin {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.black.withOpacity(0.3),
-            Colors.black.withOpacity(0.5),
-            Colors.black.withOpacity(0.8),
+            Colors.black.withValues(alpha: 0.3),
+            Colors.black.withValues(alpha: 0.5),
+            Colors.black.withValues(alpha: 0.8),
           ],
           stops: const [0.0, 0.6, 1.0],
         ),
@@ -197,7 +197,7 @@ class _HeroBannerState extends State<HeroBanner> with TickerProviderStateMixin {
                             Shadow(
                               offset: const Offset(0, 2),
                               blurRadius: 4,
-                              color: Colors.black.withOpacity(0.8),
+                              color: Colors.black.withValues(alpha: 0.8),
                             ),
                           ],
                         ),
@@ -332,7 +332,8 @@ class _HeroBannerState extends State<HeroBanner> with TickerProviderStateMixin {
                             icon: const Icon(Icons.add,
                                 color: Colors.white, size: 28),
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.2),
+                              backgroundColor:
+                                  Colors.white.withValues(alpha: 0.2),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -349,7 +350,8 @@ class _HeroBannerState extends State<HeroBanner> with TickerProviderStateMixin {
                             icon: const Icon(Icons.info_outline,
                                 color: Colors.white, size: 28),
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.2),
+                              backgroundColor:
+                                  Colors.white.withValues(alpha: 0.2),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -389,7 +391,7 @@ class _HeroBannerState extends State<HeroBanner> with TickerProviderStateMixin {
             decoration: BoxDecoration(
               color: _currentIndex == index
                   ? Colors.white
-                  : Colors.white.withOpacity(0.4),
+                  : Colors.white.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(2),
             ),
           ),

@@ -12,6 +12,13 @@ class TMDBApiService {
   Future<Map<String, dynamic>> _makeRequest(String endpoint,
       {Map<String, String>? queryParams}) async {
     try {
+      // Check if API key is valid before making request
+      if (AppConstants.tmdbApiKey.isEmpty ||
+          AppConstants.tmdbApiKey == 'your_api_key_here') {
+        throw const ApiException(
+            'API key not configured. Please add your TMDB API key to AppConstants.');
+      }
+
       final uri = Uri.parse('${AppConstants.tmdbBaseUrl}$endpoint');
       final finalUri = uri.replace(queryParameters: {
         'api_key': AppConstants.tmdbApiKey,
@@ -94,6 +101,37 @@ class TMDBApiService {
       return results.map((json) => Movie.fromJson(json)).toList();
     } catch (e) {
       throw ApiException('Failed to search movies: $e');
+    }
+  }
+
+  // Search people (actors)
+  Future<List<Map<String, dynamic>>> searchPeople(String query,
+      {int page = 1}) async {
+    try {
+      final data = await _makeRequest(
+        AppConstants.searchPeople,
+        queryParams: {
+          'query': query,
+          'page': page.toString(),
+        },
+      );
+      final List<dynamic> results = data['results'] ?? [];
+      return results.cast<Map<String, dynamic>>();
+    } catch (e) {
+      throw ApiException('Failed to search people: $e');
+    }
+  }
+
+  // Get movies by actor/person
+  Future<List<Movie>> getMoviesByPerson(int personId) async {
+    try {
+      final endpoint = AppConstants.personMovies
+          .replaceAll('{person_id}', personId.toString());
+      final data = await _makeRequest(endpoint);
+      final List<dynamic> cast = data['cast'] ?? [];
+      return cast.map((json) => Movie.fromJson(json)).toList();
+    } catch (e) {
+      throw ApiException('Failed to get movies by person: $e');
     }
   }
 

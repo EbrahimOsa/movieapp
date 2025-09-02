@@ -222,7 +222,7 @@ class ReviewCard extends StatelessWidget {
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withOpacity(0.6),
+                                  .withValues(alpha: 0.6),
                             ),
                       ),
                     ],
@@ -335,7 +335,9 @@ class _WriteReviewDialogState extends State<WriteReviewDialog> {
       await Future.delayed(
           const Duration(milliseconds: 500)); // Simulate API call
       widget.onSubmit(_rating, _reviewController.text.trim());
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     } finally {
       if (mounted) {
         setState(() {

@@ -150,7 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
                 center: Alignment.center,
                 radius: 1.0,
                 colors: [
-                  Colors.blue.withOpacity(0.1),
+                  Colors.blue.withValues(alpha: 0.1),
                   const Color(0xFF0A0A0A),
                 ],
               ),
@@ -183,7 +183,7 @@ class _SplashScreenState extends State<SplashScreen>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.blue.withOpacity(0.5),
+                                color: Colors.blue.withValues(alpha: 0.5),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               ),
@@ -242,7 +242,7 @@ class _SplashScreenState extends State<SplashScreen>
                         'Discover Amazing Movies',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                           letterSpacing: 1,
                         ),
                       ),
@@ -267,13 +267,13 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 4,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(2),
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                       ),
                       child: LinearProgressIndicator(
                         value: _progressValue.value,
                         backgroundColor: Colors.transparent,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.blue.withOpacity(0.8),
+                          Colors.blue.withValues(alpha: 0.8),
                         ),
                       ),
                     ),
@@ -281,7 +281,7 @@ class _SplashScreenState extends State<SplashScreen>
                     Text(
                       'Loading your experience...',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         fontSize: 14,
                       ),
                     ),
@@ -330,7 +330,7 @@ class ParticlePainter extends CustomPainter {
         particle.x = Random().nextDouble();
       }
 
-      paint.color = Colors.white.withOpacity(particle.opacity);
+      paint.color = Colors.white.withValues(alpha: particle.opacity);
       canvas.drawCircle(
         Offset(particle.x * size.width, particle.y * size.height),
         particle.size,

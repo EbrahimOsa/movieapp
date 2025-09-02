@@ -14,6 +14,8 @@ class AppConstants {
   static const String topRatedMovies = '/movie/top_rated';
   static const String upcomingMovies = '/movie/upcoming';
   static const String searchMovies = '/search/movie';
+  static const String searchPeople = '/search/person';
+  static const String personMovies = '/person/{person_id}/movie_credits';
   static const String movieDetails = '/movie';
   static const String movieGenres = '/genre/movie/list';
   static const String movieVideos = '/movie/{movie_id}/videos';

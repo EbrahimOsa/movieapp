@@ -90,6 +90,34 @@ class SearchProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Search movies by actor name
+  Future<void> searchMoviesByActor(String actorName) async {
+    if (actorName.trim().isEmpty) {
+      clearSearch();
+      return;
+    }
+
+    _isLoading = true;
+    _searchQuery = actorName.trim();
+    _errorMessage = '';
+    _hasSearched = true;
+    notifyListeners();
+
+    try {
+      _searchResults = await _repository.getMoviesByActor(_searchQuery);
+
+      // Sort by popularity
+      _searchResults.sort((a, b) => b.popularity.compareTo(a.popularity));
+
+      _isLoading = false;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = _getErrorMessage(e);
+      _searchResults = [];
+    }
+    notifyListeners();
+  }
+
   // Clear search results
   void clearSearch() {
     _searchResults = [];

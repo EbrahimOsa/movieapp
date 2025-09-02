@@ -112,7 +112,7 @@ class _MovieCardState extends State<MovieCard>
                       color: Theme.of(context)
                           .colorScheme
                           .outline
-                          .withOpacity(0.1),
+                          .withValues(alpha: 0.1),
                       width: 0.5,
                     ),
                   ),
@@ -153,13 +153,13 @@ class _MovieCardState extends State<MovieCard>
                               color: Theme.of(context)
                                   .colorScheme
                                   .surface
-                                  .withOpacity(0.9),
+                                  .withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: Theme.of(context)
                                     .colorScheme
                                     .outline
-                                    .withOpacity(0.2),
+                                    .withValues(alpha: 0.2),
                                 width: 0.5,
                               ),
                             ),
@@ -200,7 +200,7 @@ class _MovieCardState extends State<MovieCard>
                                 Theme.of(context)
                                     .colorScheme
                                     .surface
-                                    .withOpacity(0.95),
+                                    .withValues(alpha: 0.95),
                               ],
                             ),
                           ),
@@ -230,7 +230,7 @@ class _MovieCardState extends State<MovieCard>
                                 Theme.of(context)
                                     .colorScheme
                                     .surface
-                                    .withOpacity(0.95),
+                                    .withValues(alpha: 0.95),
                               ],
                             ),
                             borderRadius: const BorderRadius.only(
@@ -263,7 +263,7 @@ class _MovieCardState extends State<MovieCard>
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onSurface
-                                        .withOpacity(0.7),
+                                        .withValues(alpha: 0.7),
                                     fontSize: 9,
                                   ),
                                 ),
@@ -282,7 +282,7 @@ class _MovieCardState extends State<MovieCard>
                                         color: Theme.of(context)
                                             .colorScheme
                                             .primaryContainer
-                                            .withOpacity(0.8),
+                                            .withValues(alpha: 0.8),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(

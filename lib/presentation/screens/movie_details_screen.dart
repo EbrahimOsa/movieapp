@@ -6,7 +6,7 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../data/models/movie_model.dart';
 import '../providers/movie_provider.dart';
 import '../providers/widgets/shimmer_loading.dart';
-import '../providers/widgets/error_widget.dart';
+import '../widgets/error_widget.dart';
 import '../providers/widgets/favorite_button.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/theme/app_theme.dart';
@@ -400,7 +400,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.5),
+                        .withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -409,7 +409,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                         ),
                   ),
                 ],

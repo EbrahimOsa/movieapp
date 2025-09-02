@@ -57,6 +57,38 @@ class MovieRepository {
     }
   }
 
+  Future<List<Map<String, dynamic>>> searchPeople(String query,
+      {int page = 1}) async {
+    try {
+      return await apiService.searchPeople(query, page: page);
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      throw const NetworkException('Failed to search people');
+    }
+  }
+
+  Future<List<Movie>> getMoviesByActor(String actorName) async {
+    try {
+      // أولاً نبحث عن الممثل
+      final people = await apiService.searchPeople(actorName);
+      if (people.isEmpty) {
+        return [];
+      }
+
+      // نأخذ أول نتيجة (الأكثر شهرة)
+      final firstPerson = people.first;
+      final personId = firstPerson['id'] as int;
+
+      // نجيب أفلام الممثل
+      return await apiService.getMoviesByPerson(personId);
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      throw const NetworkException('Failed to get movies by actor');
+    }
+  }
+
   Future<MovieDetails> getMovieDetails(int movieId) async {
     try {
       return await apiService.getMovieDetails(movieId);
